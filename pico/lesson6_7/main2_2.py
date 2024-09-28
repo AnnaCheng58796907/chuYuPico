@@ -1,6 +1,6 @@
-from machine import ADC, Timer
+from machine import ADC, Timer, Pin
 
-adc = machine.ADC(4)
+adc = ADC(4)
 conversion_factor = 3.3/(65535)
 
 def do_thing(t):
@@ -9,7 +9,9 @@ def do_thing(t):
     print(temperature)
 
 def do_thing1(t):
-    print("do_thing1")
+    adc1 = ADC(Pin(26))
+    duty = adc1.read_u16()
+    print(f"可變電阻{round(duty/65536*10)}")
 
 tim1 = Timer(period=2000, callback=do_thing)
 tim2 = Timer(period=500,callback=do_thing1)
