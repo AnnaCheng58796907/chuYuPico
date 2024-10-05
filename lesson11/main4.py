@@ -9,8 +9,7 @@ led->GPIO 15
 
 import tools
 from machine import ADC, Timer, Pin, PWM, RTC
-import binascii
-from umqtt.simple import MQTTClient
+
 
 def do_thing(t):
     '''
@@ -35,15 +34,12 @@ def do_thing1(t):
     adc1 = ADC(Pin(26))
     duty = adc1.read_u16()
     pwm.duty_u16(duty)
-    light_level = round(duty/65535*10)
-    print(f"可變電阻{light_level}")
-    mqtt.publish('SA-56/LIGHT_LEVEL', f'{light_level}')
+    print(f"可變電阻{round(duty/65535*10)}")
     
     
 def main():
     try:
         tools.connect()
-        
     except RuntimeError as e:
         print(e)
     except Exception:
@@ -61,11 +57,6 @@ if __name__ == '__main__':
     pwm = PWM(Pin(15),freq=50)#pwm len
     conversion_factor = 3.3/(65535)
     rtc = RTC()
-    SERVER = "192.168.0.252"
-    CLIENT_ID = binascii.hexlify(machine.unique_id())
-    mqtt = MQTTClient(CLIENT_ID, SERVER, user='pi', password='raspberry')
-    mqtt.connect()
-    
     main()
 
 

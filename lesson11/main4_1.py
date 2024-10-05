@@ -2,25 +2,27 @@ import time
 import binascii
 import machine
 from umqtt.simple import MQTTClient
+from machine import Pin
+import tools
 
 
-# Default MQTT server to connect to
-SERVER = "192.168.0.252"
-CLIENT_ID = binascii.hexlify(machine.unique_id())
-TOPIC = b"SA-56/雞舍"
 
-
-def main(server=SERVER):
-    c = MQTTClient(CLIENT_ID, server)
-    c.connect()
-    print("Connected to %s, waiting for button presses" % server)
-    while True:
+def main():
+    try:
+        tools.connect()
+        mqtt = MQTTClient(CLIENT_ID, SERVER, user='pi', password='raspberry')
+        mqtt.connect()
         while True:
-            if button.value() == 0:
-                break
-            time.sleep_ms(20)
-        print("Button pressed")
-        c.publish(TOPIC, b"toggle")
-        time.sleep_ms(200)
-
-    c.disconnect()
+            mqtt.publish(TOPIC, b"24.516")#bit
+            time.sleep_ms(2000)
+    
+    except Exception:
+        print('連線錯誤')
+        mqtt.disconnect()
+    
+if __name__ == '__main__':
+    # Default MQTT server to connect to
+    SERVER = "192.168.0.252"
+    CLIENT_ID = binascii.hexlify(machine.unique_id())
+    TOPIC = b"SA-56/雞舍/溫度"
+    main()
