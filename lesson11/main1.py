@@ -1,8 +1,9 @@
-import tools
+
 from machine import ADC, Timer, Pin, PWM, RTC
 
-tools.connect()
+
 adc = ADC(4)
+adc_light = ADC(Pin(28))
 pwm = PWM(Pin(15),freq=50)
 conversion_factor = 3.3/(65535)
 rtc = RTC()
@@ -10,10 +11,10 @@ rtc = RTC()
 def do_thing(t):
     temperature_value = adc.read_u16()
     temperature = 27 - ((temperature_value*conversion_factor)-0.706)/0.001721
-    year, month,day, weekly, hours, minutes, seconds, info = rtc.datetime()
-    datetime_str = f"{year}-{month}-{day} {hours}:{minutes}:{seconds}"
-    print(datetime_str)
-    print(temperature)
+    print(f'溫度:{temperature}')
+    adc_value = adc_light.read_u16()
+    print(f'光線:{adc_value}')
+
 
 def do_thing1(t):
     adc1 = ADC(Pin(26))
