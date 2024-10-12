@@ -22,8 +22,10 @@ def do_thing(t):
     temperature_value = adc.read_u16()
     temperature = 27 - ((temperature_value*conversion_factor)-0.706)/0.001721
     print(f'溫度:{temperature}')
+    mqtt.publish('SA-56/TEMPERATURE', f'{temperature}')
     adc_value = adc_light.read_u16()
     print(f'光線:{adc_value}')
+    mqtt.publish('SA-56/LINE_LEVEL', f'{adc_value}')
 
 
 def do_thing1(t):
@@ -35,9 +37,9 @@ def do_thing1(t):
     adc1 = ADC(Pin(26))
     duty = adc1.read_u16()
     pwm.duty_u16(duty)
-    light_level = round(duty/65535*10)
-    print(f"可變電阻{light_level}")
-    mqtt.publish('SA-56/LIGHT_LEVEL', f'{light_level}')
+    led_level = round(duty/65535*10)
+    print(f"可變電阻{led_level}")
+    mqtt.publish('SA-56/LED_LEVEL', f'{led_level}')
     
     
 def main():
