@@ -1,4 +1,5 @@
 #!usr/bin/micorpython
+# -*- coding: utf-8 -*-
 '''
 led->GPIO 15
 光敏電阻->GPIO 25
@@ -25,8 +26,11 @@ def do_thing(t):
     print(f'溫度:{temperature}')
     mqtt.publish('SA-56/TEMPERATURE', f'{temperature}')
     adc_value = adc_light.read_u16()
-    print(f'光線:{adc_value}')
-    mqtt.publish('SA-56/LINE_LEVEL', f'{adc_value}')
+    line_state = 0 if adc_value < 9000 else 1
+    
+    #print(f'光線:{adc_value}')
+    print(f'光線:{line_state}')
+    mqtt.publish('SA-56/LINE_LEVEL', f'{line_state}')
 
 
 def do_thing1(t):

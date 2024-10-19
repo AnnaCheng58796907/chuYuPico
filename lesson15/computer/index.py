@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import paho.mqtt.client as mqtt
 from datetime import datetime
 import os, csv
 
 #def record(r:list[str, str, int]):
-def record(date:str, topic:str, value:int | float):
+def record(date:str, topic:str, value:int | float | str):
     '''
     # 檢查是否有data資料夾,沒有就建立data資料夾
     # 取得今天日期,並建立今天日期的csv檔
@@ -42,6 +43,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
 def on_message(client, userdata, msg):
     global led_origin_value#變更為全域變數
     global temperature_origin_value
+    global line_origin_status
     topic = msg.topic
     value = msg.payload.decode()
     #print(f"Received message '{msg.payload.decode()}' on topic '{msg.topic}'")
@@ -51,19 +53,24 @@ def on_message(client, userdata, msg):
         led_value = int(value)
         if led_value != led_origin_value:
             led_origin_value = led_value
-            print(f'led_value:{led_value}')
+            print(f'led_value:{led_origin_value}')
             
             #save_data = [now_str, 'SA-56/LED_LEVEL', led_value]
-            record(now_str, topic, led_value)
+            record(now_str, topic, led_origin_value)
 
     if topic == 'SA-56/TEMPERATURE':
         temperature_value = float(value)
         if temperature_value != temperature_origin_value:
-            temperature_value = value
-            print(f'溫度:{value}')
-            record(now_str, topic, temperature_value)
+            temperature_origin_value = temperature_value
+            print(f'溫度:{temperature_origin_value}')
+            record(now_str, topic, temperature_origin_value)
     
-
+    if topic == 'SA-56/LINE_LEVEL':
+        if line_origin_status != value:
+            line_origin_status = value
+            print(f'光線:{line_origin_status}')
+            record(now_str, topic, line_origin_status)
+    
 def main():
     client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
     # 設定用戶名和密碼
@@ -80,4 +87,5 @@ if __name__ == "__main__":
 
     led_origin_value = 0
     temperature_origin_value = 0.0
+    line_origin_status = 0
     main()
