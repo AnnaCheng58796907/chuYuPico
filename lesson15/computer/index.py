@@ -2,7 +2,18 @@ import paho.mqtt.client as mqtt
 from datetime import datetime
 import os, csv
 
-def record(r):
+#def record(r:list[str, str, int]):
+def record(date:str, topic:str, value:int):
+    '''
+    # 檢查是否有data資料夾,沒有就建立data資料夾
+    # 取得今天日期,並建立今天日期的csv檔
+    # 將參數r的資料,儲存進入csv檔案內
+    # parameters r:list -> 是list[日期字串, topic, 值]
+    # parameters date:str->這是日期及時間
+    # parameters topic:str->這是訂閱的topic
+    # parameters value:int->這是訂閱的值 
+    
+    '''
     #os.path.realpath(__file__)
     root_dir = os.getcwd()
     data_dir = os.path.join(root_dir, 'data')
@@ -11,8 +22,9 @@ def record(r):
         os.mkdir('data')
 
     
-    today = datetime.today()
-    filename = today.strftime('%Y-%m-%d') + '.csv'
+    # today = datetime.today()
+    # filename = today.strftime('%Y-%m-%d') + '.csv'
+    filename = date[0:10] + '.csv'
     #get_file_abspath
     full_path = os.path.join(data_dir, filename)
     #沒有這個檔,要建立檔案
@@ -22,7 +34,7 @@ def record(r):
 
     with open(full_path, mode='a', encoding='utf-8', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(r)
+        writer.writerow([date, topic, value])
 def on_connect(client, userdata, flags, reason_code, properties):
     #連線bloker成功時,只會執行一次
     client.subscribe("SA-56/#")
@@ -38,8 +50,8 @@ def on_message(client, userdata, msg):
             print(f'led_value:{led_value}')
             today = datetime.now()
             now_str = today.strftime('%Y-%m-%d %H:%M:%S')
-            save_data = [now_str, 'SA-56/LED_LEVEL', led_value]
-            record(save_data)
+            #save_data = [now_str, 'SA-56/LED_LEVEL', led_value]
+            record(now_str, topic, led_value)
     #print(f"Received message '{msg.payload.decode()}' on topic '{msg.topic}'")
 
 def main():
