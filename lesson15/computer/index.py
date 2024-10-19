@@ -68,6 +68,10 @@ def on_message(client, userdata, msg):
     if topic == 'SA-56/LINE_LEVEL':
         if line_origin_status != value:
             line_origin_status = value
+            if line_origin_status == '0' :
+                line_origin_status = '關燈'
+            else:
+                line_origin_status = '開燈'
             print(f'光線:{line_origin_status}')
             record(now_str, topic, line_origin_status)
     
