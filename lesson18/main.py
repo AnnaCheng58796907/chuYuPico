@@ -25,13 +25,14 @@ def do_thing(t):
     #print(f'溫度:{temperature:.2f}')
     #print(f'溫度:{temperature}')
     mqtt.publish('SA-56/TEMPERATURE', f'{temperature}')
+    blynk_mqtt.publish('ds/temperature', f'{temperature}')
     adc_value = adc_light.read_u16()
     line_state = 0 if adc_value < 9000 else 1
     
     #print(f'光線:{adc_value}')
     #print(f'光線:{line_state}')
     mqtt.publish('SA-56/LINE_LEVEL', f'{line_state}')
-
+    blynk_mqtt.publish('ds/line_status', f'{line_state}')
 
 def do_thing1(t):
     '''
@@ -45,7 +46,7 @@ def do_thing1(t):
     led_level = round(duty/65535*10)
     #print(f"可變電阻{led_level}")
     mqtt.publish('SA-56/LED_LEVEL', f'{led_level}')
-    
+    blynk_mqtt.publish('ds/led_level', f'{led_level}')
     
 def main():
     global blynk_mqtt
@@ -53,7 +54,7 @@ def main():
     print(config.BLYNK_TEMPLATE_ID)
     print(config.BLYNK_AUTH_TOKEN)
     blynk_mqtt = MQTTClient(config.BLYNK_TEMPLATE_ID, config.BLYNK_MQTT_BROKER, user='device', password=config.BLYNK_AUTH_TOKEN)
-    print(blynk_mqtt.connect())
+    blynk_mqtt.connect()
 
 
 if __name__ == '__main__':
